@@ -3,3 +3,4 @@ node_modules
 uploads
 applicants.csv
 package-lock.json
+config.env

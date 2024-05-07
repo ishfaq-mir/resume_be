@@ -10,6 +10,7 @@ const syfs = require("fs")
 const httpException = require("http-exception")
 const compression = require("compression");
 const helmet = require("helmet");
+var cors = require('cors')
 
 const port = 3000;
 
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(cors());
 
 app.get("/test", (req, res) => {
 

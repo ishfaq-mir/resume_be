@@ -1,4 +1,0 @@
-fullName,phone,email,gender,position,qualification,address,experience,download-link
-jane,0123456789,hello@gmail.com,male,ai ml engineer,BCA,xyz,2,http://localhost:3000/?resumeName=resume3.pdf
-jane,0123456789,hello@gmail.com,male,ai ml engineer,BCA,xyz,2,http://localhost:3000/?resumeName=resume3_aspl_server_5483.pdf
-jane,0123456789,hello@gmail.com,male,ai ml engineer,BCA,,2,http://localhost:3000/?resumeName=resume3_aspl_server_5483_aspl_server_9330.pdf

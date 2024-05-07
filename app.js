@@ -64,10 +64,6 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
     const validExtenstions = ['pdf','doc','docx']
     const [fn,ext] = originalname.split('.')
 
-
-   
-    
-
     if(size> 5 * 1024 * 1024){
       throw new Error("Your resume file has exceeded the 5MB Limit")  
     }

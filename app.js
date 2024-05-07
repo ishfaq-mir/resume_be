@@ -56,8 +56,8 @@ app.post("/applicants", async (req, res,next) => {
     await mailToHr();
     res.json({ status: "success", message: "check your inbox" });
   } else {
-    // throw new Error("Your credentials are wrong");
-    next()
+    throw new Error("Your credentials are wrong");
+    // next()
   }
 });
 
@@ -166,7 +166,7 @@ async function mailToHr() {
  
     const info = await transporter.sendMail({
       from: "noreply@asmsc.net", 
-      to: "mirishfaqhussain@outlook.com", 
+      to: "ishfaqmir@almuqeet.systems", 
       subject: "Greetings from the app Hr", 
       text: "This is mars", 
       html: ` <p>Hi Hr,</p>

@@ -8,12 +8,16 @@ const multer = require("multer");
 const upload = multer({});
 const syfs = require("fs")
 const httpException = require("http-exception")
+const compression = require("compression");
+const helmet = require("helmet");
 
 const port = 3000;
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(compression()); 
+app.use(helmet());
 
 
 app.use((req, res, next) => {
@@ -110,11 +114,9 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
    
 
     let record = `${fullName},${phone},${email},${gender},${position},${qualification},{{address}},{{experience}},${process.env.BASE_URL}?resumeName=${originalname}\n`;
-
     record = req.body.address ? record.replace('{{address}}',req.body.address) : record.replace('{{address}}','')
-    record = req.body.experience ? record.replace('{{experience}}',req.body.experience):record.replace('{{experience}}',0)
+    record = req.body.experience ? record.replace('{{experience}}',req.body.experience) : record.replace('{{experience}}',0)
     
-
     await fs.writeFile(`./uploads/${originalname}`,buffer)
     await fs.appendFile("applicants.csv", record);
 

@@ -48,17 +48,25 @@ app.get("/", (req, res) => {
 
 
 app.post("/applicants", async (req, res,next) => {
-  const { userName, secret } = req.body;
-  if (
-    userName === process.env.HR_USERNAME &&
-    secret === process.env.HR_SECRET
-  ) {
-    await mailToHr();
-    res.json({ status: "success", message: "check your inbox" });
-  } else {
-    throw new Error("Your credentials are wrong");
-    // next()
+
+  try{
+    const { userName, secret } = req.body;
+    if (
+      userName === process.env.HR_USERNAME &&
+      secret === process.env.HR_SECRET
+    ) {
+      await mailToHr();
+      res.json({ status: "success", message: "check your inbox" });
+    } else {
+      throw new Error("Your credentials are wrong");
+    }
   }
+  catch{
+
+    next()
+
+  }
+  
 });
 
 app.post("/", upload.single("resume"), async (req, res,next) => {
@@ -66,7 +74,6 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
     const fileName = "applicants.csv";
     const header = "fullName,phone,email,gender,position,qualification,address,experience,download-link\n";
 
-    console.log(req.file)
 
     let {originalname,buffer,size} = req?.file
     const { fullName,phone, email,gender, position, qualification } = req.body;

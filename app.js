@@ -57,7 +57,7 @@ app.post("/applicants", async (req, res,next) => {
     res.json({ status: "success", message: "check your inbox" });
   } else {
     // throw new Error("Your credentials are wrong");
-    next(e)
+    next()
   }
 });
 
@@ -129,9 +129,9 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
       status: "success",
       message: "We have received your job application",
     });
-  } catch (e) {
+  } catch  {
    
-    next(e)
+    next()
   }
 });
 
@@ -166,7 +166,7 @@ async function mailToHr() {
  
     const info = await transporter.sendMail({
       from: "noreply@asmsc.net", 
-      to: "irfan@smsala.com", 
+      to: "mirishfaqhussain@outlook.com", 
       subject: "Greetings from the app Hr", 
       text: "This is mars", 
       html: ` <p>Hi Hr,</p>

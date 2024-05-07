@@ -7,11 +7,14 @@ const nodemailer = require("nodemailer");
 const multer = require("multer");
 const upload = multer({});
 const syfs = require("fs")
+const httpException = require("http-exception")
+
 const port = 3000;
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -32,7 +35,7 @@ app.get("/", (req, res) => {
 
 
 
-app.post("/applicants", async (req, res) => {
+app.post("/applicants", async (req, res,next) => {
   const { userName, secret } = req.body;
   if (
     userName === process.env.HR_USERNAME &&
@@ -45,18 +48,60 @@ app.post("/applicants", async (req, res) => {
   }
 });
 
-app.post("/", upload.single("resume"), async (req, res) => {
+app.post("/", upload.single("resume"), async (req, res,next) => {
   try {
     const fileName = "applicants.csv";
-    const header = "firsName,lastName,email,gender,position,qualification,address,experience,download-link\n";
+    const header = "fullName,phone,email,gender,position,qualification,address,experience,download-link\n";
+
+    console.log(req.file)
+
+    let {originalname,buffer,size} = req?.file
+    const { fullName,phone, email,gender, position, qualification } = req.body;
+    const validExtenstions = ['pdf','doc','docx']
+    const [fn,ext] = originalname.split('.')
+
+
+   
+    
+
+    if(size> 5 * 1024 * 1024){
+      throw new Error("Your resume file has exceeded the 5MB Limit")  
+    }
+
+    if(!validExtenstions.includes(ext)){
+
+      throw new Error("Invalid extention file")
+
+    }
+
+    if(!fullName){
+      throw new Error("full name is missing")
+    }
+
+    if(!email){
+      throw new Error("email is missing")
+    }
+
+    if(!gender){
+      throw new Error("gender is missing")
+    }
+
+    if(!position){
+      throw new Error("position is missing")
+    }
+
+    if(!qualification){
+      throw new Error("qualification is missing")
+    }
+
+    if(phone.length>10){
+      throw new Error ("Invalid phone number")
+
+    }
 
     if (!(await fileExists(fileName))) {
       await fs.appendFile(fileName, header);
     }
-
-
-    let {originalname,buffer} = req?.file
-    const { firstName, email,gender, position, qualification } = req.body;
 
     if(syfs.existsSync(`./uploads/${originalname}`)){
       const [fn,extension] = originalname.split('.')
@@ -64,68 +109,24 @@ app.post("/", upload.single("resume"), async (req, res) => {
     }
    
 
-    let record = `${firstName},{{lastName}},${email},${gender},${position},${qualification},{{address}},{{experience}},http://localhost:3000/?resumeName=${originalname}\n`;
-    record = req.body.lastName ? record.replace('{{lastName}}',req.body.lastName) : record.replace('{{lastName}}','');
+    let record = `${fullName},${phone},${email},${gender},${position},${qualification},{{address}},{{experience}},${process.env.BASE_URL}?resumeName=${originalname}\n`;
+
     record = req.body.address ? record.replace('{{address}}',req.body.address) : record.replace('{{address}}','')
     record = req.body.experience ? record.replace('{{experience}}',req.body.experience):record.replace('{{experience}}',0)
-    console.log(record)
     
 
     await fs.writeFile(`./uploads/${originalname}`,buffer)
     await fs.appendFile("applicants.csv", record);
 
-    // await uploadResume(buffer,originalname)
     res.json({
       status: "success",
       message: "We have received your job application",
     });
   } catch (e) {
-    console.log(e)
+   
+    next(e)
   }
 });
-
-
-
-// async function uploadResume(buffer,originalName){
-// const https = require('https');
-// const fs = require('fs');
-// console.log("here is your buffer",buffer)
-// console.log("here is your originalName",originalName)
-
-// // const REGION = 'sg'; 
-// // const BASE_HOSTNAME = 'storage.bunnycdn.com';
-// const HOSTNAME = `sg.storage.bunnycdn.com`
-// const STORAGE_ZONE_NAME = 'aspl-candidate-resumes';
-// const FILENAME_TO_UPLOAD = originalName;
-
-// // AKfycbwsgtpkanxi3JOTlAKrilJYkF40htgIyKbDKROvejdzpm9AYuQV3GJxL8_blXe5YG5E2A  secondary access key
-// const ACCESS_KEY = 'AKfycbwsgtpkanxi3JOTlAKrilJYkF40htgIyKbDKROvejdzpm9AYuQV3GJxL8_blXe5YG5E2A';  //YOUR_BUNNY_STORAGE_API_KEY
-// const readStream = buffer
-// const options = {
-//     method: 'PUT',
-//     host: HOSTNAME,
-//     path: `/${STORAGE_ZONE_NAME}/${FILENAME_TO_UPLOAD}`,
-//     headers: {
-//       AccessKey: ACCESS_KEY,
-//       'Content-Type': 'application/octet-stream',
-//     },
-//     data:buffer
-//   };
-
-//   const req = https.request(options, (res) => {
-//     res.on('data', (chunk) => {
-//       console.log(chunk.toString('utf8'));
-//     });
-//   });
-
-//   req.on('error', (error) => {
-//     console.error("this is your ERROR ",error);
-//   });
-
-
-// };
-
-
 
 
 async function fileExists(filePath) {

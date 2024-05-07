@@ -28,6 +28,14 @@ app.use((req, res, next) => {
   next();
 });
 
+
+app.get("/test", (req, res) => {
+
+  const resumeName = req?.query?.resumeName
+ res.json({status:"success"})
+});
+
+
 app.get("/", (req, res) => {
 
   const resumeName = req?.query?.resumeName
@@ -48,7 +56,8 @@ app.post("/applicants", async (req, res,next) => {
     await mailToHr();
     res.json({ status: "success", message: "check your inbox" });
   } else {
-    throw new Error("Your credentials are wrong");
+    // throw new Error("Your credentials are wrong");
+    next(e)
   }
 });
 
@@ -140,18 +149,23 @@ async function fileExists(filePath) {
 
 async function mailToHr() {
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
+    host: "mail.asmsc.net",
+    port: 25,
     secure: false, 
     auth: {
-      user: `${process.env.SMTP_USERNAME}`,
-      pass: `${process.env.SMTP_PASSWORD}`,
+      // user: `${process.env.SMTP_USERNAME}`,
+      // pass: `${process.env.SMTP_PASSWORD}`,
+      user: `noreply`,
+      pass: `Irfan@786#`,
     },
+    tls: {
+      rejectUnauthorized: false
+    }
   });
 
   try {
     const info = await transporter.sendMail({
-      from: "mirishfaqhussain007@gmail.com", 
+      from: "noreply@almuqeet.net", 
       to: "irfan@smsala.com", 
       subject: "Greetings from the app Hr", 
       text: "This is mars", 

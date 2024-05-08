@@ -8,8 +8,8 @@ const multer = require("multer");
 const upload = multer({});
 const syfs = require("fs")
 const httpException = require("http-exception")
-const compression = require("compression");
-const helmet = require("helmet");
+// const compression = require("compression");
+// const helmet = require("helmet");
 var cors = require('cors')
 
 const port = 3000;
@@ -17,8 +17,8 @@ const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(compression()); 
-app.use(helmet());
+// app.use(compression()); 
+// app.use(helmet());
 
 
 app.use((req, res, next) => {
@@ -29,7 +29,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cors());
+// app.use(cors());
 
 app.get("/test", (req, res) => {
 

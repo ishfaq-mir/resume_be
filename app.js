@@ -21,15 +21,9 @@ app.use(bodyParser.json());
 // app.use(helmet());
 
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  next();
-});
 
-// app.use(cors());
+// { origin: 'http://127.0.0.1:5500' }
+app.use(cors())
 
 app.get("/test", (req, res) => {
 
@@ -63,9 +57,9 @@ app.post("/applicants", async (req, res,next) => {
       throw new Error("Your credentials are wrong");
     }
   }
-  catch{
+  catch(error){
 
-    next()
+    res.status(401).json({ status: "error", message: error.message });
 
   }
   
@@ -138,9 +132,9 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
       status: "success",
       message: "We have received your job application",
     });
-  } catch  {
+  } catch(error)  {
    
-    next()
+    res.status(400).json({ status: "error", message: error.message });
   }
 });
 

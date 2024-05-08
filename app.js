@@ -8,8 +8,12 @@ const multer = require("multer");
 const upload = multer({});
 const syfs = require("fs")
 const httpException = require("http-exception")
+
+const recaptcha = require('express-recaptcha');
 // const compression = require("compression");
 // const helmet = require("helmet");
+
+recaptcha.init('6LeOnNUpAAAAABg2f6feCoDAsmNF7vlLOtmRTscY', '6LeOnNUpAAAAACHIWxIyagDALV5QK_7lklVEl8C0'); 
 var cors = require('cors')
 
 const port = 3000;
@@ -65,22 +69,35 @@ app.post("/applicants", async (req, res,next) => {
   
 });
 
-app.post("/", upload.single("resume"), async (req, res,next) => {
-  try {
+app.post("/", upload.single("resume"),recaptcha.middleware.verify, async (req, res,next) => {
+
+  //   if (!req.recaptcha.error) {
+  //     // reCAPTCHA verification successful
+  //     // Handle form submission logic here
+  //     res.send('Form submitted successfully!');
+  // } else {
+  //     // reCAPTCHA verification failed
+  //     res.status(400).send('reCAPTCHA verification failed');
+  // }
+
+  if(recaptcha.recaptcha.error){
     const fileName = "applicants.csv";
     const header = "fullName,phone,email,gender,position,qualification,address,experience,download-link\n";
 
     const recaptchaToken = req.body['g-recaptcha-response'];
-    console.log(req.body)
-    const secretKey = process.env.GOOGLE_CAPTCHA_KEY; 
-    
-    const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${recaptchaToken}`;
-    
-    console.log(verificationUrl)
 
-    const response = await fetch(verificationUrl, { method: 'POST' });
-    const responseData = await response.json();
-    console.log(responseData)
+    console.log("this is recaptcha token",recaptchaToken)
+
+   
+    const secretKey = "6LeOnNUpAAAAACHIWxIyagDALV5QK_7lklVEl8C0" 
+    
+    const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${recaptchaToken[1]}`;
+    
+      const response = await fetch(verificationUrl, { method: 'POST' });
+      const responseData = await response.json();
+      console.log("responseData",responseData)
+   
+      console.log(error)
 
 
     let {originalname,buffer,size} = req?.file
@@ -144,10 +161,13 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
       status: "success",
       message: "We have received your job application",
     });
-  } catch(error)  {
-   
-    res.status(400).json({ status: "error", message: error.message });
+
   }
+  else{
+    console.log("error")
+  }
+    
+  
 });
 
 

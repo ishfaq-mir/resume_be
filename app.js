@@ -70,6 +70,18 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
     const fileName = "applicants.csv";
     const header = "fullName,phone,email,gender,position,qualification,address,experience,download-link\n";
 
+    const recaptchaToken = req.body['g-recaptcha-response'];
+    console.log(req.body)
+    const secretKey = process.env.GOOGLE_CAPTCHA_KEY; 
+    
+    const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${recaptchaToken}`;
+    
+    console.log(verificationUrl)
+
+    const response = await fetch(verificationUrl, { method: 'POST' });
+    const responseData = await response.json();
+    console.log(responseData)
+
 
     let {originalname,buffer,size} = req?.file
     const { fullName,phone, email,gender, position, qualification } = req.body;

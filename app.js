@@ -13,20 +13,14 @@ const recaptcha = require('express-recaptcha');
 // const compression = require("compression");
 // const helmet = require("helmet");
 
-recaptcha.init('6LeOnNUpAAAAABg2f6feCoDAsmNF7vlLOtmRTscY', '6LeOnNUpAAAAACHIWxIyagDALV5QK_7lklVEl8C0'); 
+
 var cors = require('cors')
 
 const port = 3000;
 
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-// app.use(compression()); 
-// app.use(helmet());
 
-
-
-// { origin: 'http://127.0.0.1:5500' }
 app.use(cors())
 
 app.get("/test", (req, res) => {
@@ -69,36 +63,11 @@ app.post("/applicants", async (req, res,next) => {
   
 });
 
-app.post("/", upload.single("resume"),recaptcha.middleware.verify, async (req, res,next) => {
+app.post("/", upload.single("resume"), async (req, res,next) => {
 
-  //   if (!req.recaptcha.error) {
-  //     // reCAPTCHA verification successful
-  //     // Handle form submission logic here
-  //     res.send('Form submitted successfully!');
-  // } else {
-  //     // reCAPTCHA verification failed
-  //     res.status(400).send('reCAPTCHA verification failed');
-  // }
 
-  if(recaptcha.recaptcha.error){
     const fileName = "applicants.csv";
     const header = "fullName,phone,email,gender,position,qualification,address,experience,download-link\n";
-
-    const recaptchaToken = req.body['g-recaptcha-response'];
-
-    console.log("this is recaptcha token",recaptchaToken)
-
-   
-    const secretKey = "6LeOnNUpAAAAACHIWxIyagDALV5QK_7lklVEl8C0" 
-    
-    const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${recaptchaToken[1]}`;
-    
-      const response = await fetch(verificationUrl, { method: 'POST' });
-      const responseData = await response.json();
-      console.log("responseData",responseData)
-   
-      console.log(error)
-
 
     let {originalname,buffer,size} = req?.file
     const { fullName,phone, email,gender, position, qualification } = req.body;
@@ -112,7 +81,6 @@ app.post("/", upload.single("resume"),recaptcha.middleware.verify, async (req, r
     if(!validExtenstions.includes(ext)){
 
       throw new Error("Invalid extention file")
-
     }
 
     if(!fullName){
@@ -162,10 +130,8 @@ app.post("/", upload.single("resume"),recaptcha.middleware.verify, async (req, r
       message: "We have received your job application",
     });
 
-  }
-  else{
-    console.log("error")
-  }
+  
+  
     
   
 });

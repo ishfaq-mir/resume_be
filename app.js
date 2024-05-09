@@ -8,14 +8,7 @@ const multer = require("multer");
 const upload = multer({});
 const syfs = require("fs")
 
-const httpException = require("http-exception")
-
-const recaptcha = require('express-recaptcha');
-// const compression = require("compression");
-// const helmet = require("helmet");
-
-
-var cors = require('cors')
+const cors = require('cors')
 
 const port = 3000;
 
@@ -68,7 +61,7 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
 
 
     const fileName = "applicants.csv";
-    const header = "fullName,phone,email,gender,position,qualification,address,experience,download-link\n";
+    const header = "\t Full Name \t,\t Phone \t,\tEmail\t,\tGender\t,\tPosition\t,\tQualification\t,\tAddress\t,\tExperience\t,\tCv\t\n";
 
     let {originalname,buffer,size} = req?.file
     const { fullName,phone, email,gender, position, qualification } = req.body;
@@ -131,10 +124,6 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
       message: "We have received your job application",
     });
 
-  
-  
-    
-  
 });
 
 
@@ -168,9 +157,9 @@ async function mailToHr() {
  
     const info = await transporter.sendMail({
       from: "noreply@asmsc.net", 
-      to: "irfan@smsala.com", 
+      to: "hr@almuqeet.net", 
       subject: "Greetings from the app Hr", 
-      text: "This is mars", 
+      text: "", 
       html: ` <p>Hi Hr,</p>
     <p>Attached is the Excel file containing candidates who've applied for our open positions. Please review at your convenience.</p>
     <p>Let me know if you need any further assistance.</p>

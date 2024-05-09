@@ -8,15 +8,24 @@ const multer = require("multer");
 const upload = multer({});
 const syfs = require("fs")
 const httpException = require("http-exception")
-
 const recaptcha = require('express-recaptcha');
+const https = require('https')
 // const compression = require("compression");
 // const helmet = require("helmet");
 
 
+const options = {
+  key: syfs.readFileSync('./certs/sapi.key'),
+  cert:  syfs.readFileSync('./certs/sapi.crt'),
+  // ca: fs.readFileSync('path/to/your/CA/bundle.pem'), // Uncomment if you have CA bundle
+};
+
+
+const server = https.createServer(options, app);
+console.log(server)
 var cors = require('cors')
 
-const port = 3000;
+const port = 443;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -190,6 +199,6 @@ async function mailToHr() {
 
 
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+server.listen(port, () => {
+  console.log(`Hello this app is listening at the  ${port}`);
 });

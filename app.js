@@ -65,7 +65,11 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
     console.log("here is your body",req.body)
 
     let {originalname,buffer,size} = req?.file
-    const { fullName,phone, email,gender, position, qualification } = req.body;
+    let { fullName,phone, email,gender, position, qualification } = req.body;
+    fullName = fullName.replace(','," ")
+    phone= phone.replace(","," ")
+    address = address.replace(","," ")
+    qualification = qualification.replace(","," ")
     const validExtenstions = ['pdf','doc','docx']
     const [fn,ext] = originalname.split('.')
 

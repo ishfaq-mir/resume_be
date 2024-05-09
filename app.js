@@ -168,7 +168,7 @@ async function mailToHr() {
  
     const info = await transporter.sendMail({
       from: "noreply@asmsc.net", 
-      to: "ishfaqmir@almuqeet.systems", 
+      to: "irfan@smsala.com", 
       subject: "Greetings from the app Hr", 
       text: "This is mars", 
       html: ` <p>Hi Hr,</p>

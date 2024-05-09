@@ -68,7 +68,6 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
     let { fullName,phone, email,gender, position, qualification } = req.body;
     fullName = fullName.replace(','," ")
     phone= phone.replace(","," ")
-    address = address.replace(","," ")
     qualification = qualification.replace(","," ")
     const validExtenstions = ['pdf','doc','docx']
     const [fn,ext] = originalname.split('.')
@@ -118,7 +117,7 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
    
 
     let record = `${fullName},${phone},${email},${gender},${position},${qualification},{{address}},{{experience}},${process.env.BASE_URL}?resumeName=${originalname}\n`;
-    record = req.body.address ? record.replace('{{address}}',req.body.address) : record.replace('{{address}}','')
+    record = req.body.address ? record.replace('{{address}}',req.body.address.replace(","," ")) : record.replace('{{address}}','')
     record = req.body.experience ? record.replace('{{experience}}',req.body.experience) : record.replace('{{experience}}',0)
     
     await fs.writeFile(`./uploads/${originalname}`,buffer)

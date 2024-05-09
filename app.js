@@ -72,10 +72,10 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
       throw new Error("Your resume file has exceeded the 5MB Limit")  
     }
 
-    if(!validExtenstions.includes(ext)){
+    // if(!validExtenstions.includes(ext)){
 
-      throw new Error("Invalid extention file")
-    }
+    //   throw new Error("Invalid extention file")
+    // }
 
     if(!fullName){
       throw new Error("full name is missing")

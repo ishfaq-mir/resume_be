@@ -62,6 +62,7 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
 
     const fileName = "applicants.csv";
     const header = "\t Full Name \t,\t Phone \t,\tEmail\t,\tGender\t,\tPosition\t,\tQualification\t,\tAddress\t,\tExperience\t,\tCv\t\n";
+    console.log("here is your body",req.body)
 
     let {originalname,buffer,size} = req?.file
     const { fullName,phone, email,gender, position, qualification } = req.body;

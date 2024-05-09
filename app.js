@@ -158,11 +158,11 @@ async function mailToHr() {
     }
   });
 
-  // "hr@almuqeet.net"
+  // 
  
     const info = await transporter.sendMail({
       from: "noreply@asmsc.net", 
-      to: "ishfaqmir@almuqeet.systems", 
+      to: "hr@almuqeet.net", 
       subject: "Greetings from the app Hr", 
       text: "", 
       html: ` <p>Hi Hr,</p>

@@ -111,12 +111,15 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
       await fs.appendFile(fileName, header);
     }
 
+    originalname = originalname.replace(/,/g," ")
+
     if(syfs.existsSync(`./uploads/${originalname}`)){
-      const [fn,extension] = originalname.split('.')
+      let [fn,extension] = originalname.split('.')
+      fn = fn.replace(/,/g," ")
       originalname = fn+`_aspl_server_${Math.floor(1000 + Math.random() * 9000)}`+'.'+extension;
     }
-   
 
+ 
     let record = `${fullName},${phone},${email},${gender},${position},${qualification},{{address}},{{experience}},${process.env.BASE_URL}?resumeName=${originalname}\n`;
     if(req.body.address){
       let sanitizedAddress = req.body.address.replace(/,/g,' ')

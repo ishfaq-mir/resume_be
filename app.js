@@ -60,6 +60,7 @@ app.post("/applicants", async (req, res,next) => {
 app.post("/", upload.single("resume"), async (req, res,next) => {
 
 
+  try{
     const fileName = "applicants.csv";
     const header = "\t Full Name \t,\t Phone \t,\tEmail\t,\tGender\t,\tPosition\t,\tQualification\t,\tAddress\t,\tExperience\t,\tCv\t\n";
     console.log("here is your body",req.body)
@@ -117,7 +118,14 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
    
 
     let record = `${fullName},${phone},${email},${gender},${position},${qualification},{{address}},{{experience}},${process.env.BASE_URL}?resumeName=${originalname}\n`;
-    record = req.body.address ? record.replace('{{address}}',req.body.address.replace(/,/g," ")) : record.replace('{{address}}','')
+    if(req.body.address){
+      let sanitizedAddress = req.body.address.replace(/,/g,' ')
+      record = record.replace("{{address}}",sanitizedAddress)
+    }
+    else{
+      record = record.replace("{{address}}",' ')
+    }
+    // record = req.body.address ? record.replace('{{address}}',req.body.address.replace(/,/g," ")) : record.replace('{{address}}','')
     record = req.body.experience ? record.replace('{{experience}}',req.body.experience) : record.replace('{{experience}}',0)
     
     await fs.writeFile(`./uploads/${originalname}`,buffer)
@@ -127,6 +135,11 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
       status: "success",
       message: "We have received your job application",
     });
+  }
+  catch(error){
+next(error)
+  }
+    
 
 });
 

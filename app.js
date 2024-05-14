@@ -8,6 +8,9 @@ const multer = require("multer");
 const upload = multer({});
 const syfs = require("fs")
 const cors = require('cors')
+const archiver = require("archiver");
+const child_process = require('child_process');
+
 const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -16,8 +19,7 @@ app.use(bodyParser.json());
 app.use(cors())
 
 app.get("/test", (req, res) => {
-
-  const resumeName = req?.query?.resumeName
+const resumeName = req?.query?.resumeName
  res.json({status:"success"})
 });
 
@@ -31,20 +33,6 @@ app.get("/", (req, res) => {
   res.sendFile(`./uploads/${resumeName}`,{root:__dirname})
 });
 
-app.get("/bifurcate",async (req,res)=>{
-
-  const masterFile = await fs.readFile('./applicants.csv')
-  let records = masterFile.toString().split('\n')
-  let head = records.shift()
-  let [se,fsd,bde]=[false,false,false]
-
-  for(let r of records){
-
-   
-  }
-  res.json({message:"master file read"})
-
-})
 
 app.post("/applicants", async (req, res,next) => {
 
@@ -177,8 +165,6 @@ async function mailToHr() {
     }
   });
  
-
-
     const info = await transporter.sendMail({
       from:process.env.SMTP_FROM , 
       to: process.env.SMTP_TO, 

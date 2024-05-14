@@ -7,9 +7,7 @@ const nodemailer = require("nodemailer");
 const multer = require("multer");
 const upload = multer({});
 const syfs = require("fs")
-
 const cors = require('cors')
-
 const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -30,10 +28,23 @@ app.get("/", (req, res) => {
   if(!resumeName){
     throw new Error("invalid path")
   }
-  res.download(`./uploads/${resumeName}`)
+  res.sendFile(`./uploads/${resumeName}`,{root:__dirname})
 });
 
+app.get("/bifurcate",async (req,res)=>{
 
+  const masterFile = await fs.readFile('./applicants.csv')
+  let records = masterFile.toString().split('\n')
+  let head = records.shift()
+  let [se,fsd,bde]=[false,false,false]
+
+  for(let r of records){
+
+   
+  }
+  res.json({message:"master file read"})
+
+})
 
 app.post("/applicants", async (req, res,next) => {
 
@@ -50,9 +61,7 @@ app.post("/applicants", async (req, res,next) => {
     }
   }
   catch(error){
-
     res.status(401).json({ status: "error", message: error.message });
-
   }
   
 });
@@ -63,6 +72,7 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
   try{
     const fileName = "applicants.csv";
     const header = "\t Full Name \t,\t Phone \t,\tEmail\t,\tGender\t,\tPosition\t,\tQualification\t,\tAddress\t,\tExperience\t,\tCv\t\n";
+    
     console.log("here is your body",req.body)
 
     let {originalname,buffer,size} = req?.file
@@ -128,7 +138,6 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
     else{
       record = record.replace("{{address}}",' ')
     }
-    // record = req.body.address ? record.replace('{{address}}',req.body.address.replace(/,/g," ")) : record.replace('{{address}}','')
     record = req.body.experience ? record.replace('{{experience}}',req.body.experience) : record.replace('{{experience}}',0)
     
     await fs.writeFile(`./uploads/${originalname}`,buffer)
@@ -142,8 +151,6 @@ app.post("/", upload.single("resume"), async (req, res,next) => {
   catch(error){
 next(error)
   }
-    
-
 });
 
 
@@ -156,29 +163,25 @@ async function fileExists(filePath) {
   }
 }
 
-
-
 async function mailToHr() {
   const transporter = nodemailer.createTransport({
-    host: "mail.asmsc.net",
+    host: process.env.SMTP_HOST,
     port: 25,
     secure: false, 
     auth: {
-      // user: `${process.env.SMTP_USERNAME}`,
-      // pass: `${process.env.SMTP_PASSWORD}`,
-      user: `noreply`,
-      pass: `Irfan@786#`,
+      user: `${process.env.SMTP_USERNAME}`,
+      pass: `${process.env.SMTP_PASSWORD}`,
     },
     tls: {
       rejectUnauthorized: false
     }
   });
-
-  // 
  
+
+
     const info = await transporter.sendMail({
-      from: "noreply@asmsc.net", 
-      to: "hr@almuqeet.net", 
+      from:process.env.SMTP_FROM , 
+      to: process.env.SMTP_TO, 
       subject: "Greetings from the app Hr", 
       text: "", 
       html: ` <p>Hi Hr,</p>
@@ -188,18 +191,14 @@ async function mailToHr() {
     Team Digital Marketing</p>`, 
       attachments: [
         {
-          filename: "applicants.csv", 
-          path: "./applicants.csv", 
+          filename:process.env.SMTP_FILENAME, 
+          path: process.env.SMTP_PATH, 
         },
       ],
     });
-
+   
     console.log("Message sent: %s", info.messageId);
- 
 }
-
-
-
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
